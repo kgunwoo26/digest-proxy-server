@@ -23,7 +23,7 @@ app.post("/api/robot", async (req, res) => {
       },
       body: method !== "GET" ? body : undefined,
     });
-
+    console.log("요청 들어옴:", req.body);
     const text = await response.text();
     res.status(response.status).send(text);
   } catch (err) {
