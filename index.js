@@ -1,7 +1,9 @@
 import express from "express";
 import DigestClient from "digest-fetch";
 import cors from "cors";
-import "dotenv";
+import dotenv from "dotenv";
+
+dotenv.config(); // 반드시 추가해야 .env 파일 읽힘
 
 const app = express();
 app.use(cors());
