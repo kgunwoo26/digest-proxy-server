@@ -19,9 +19,9 @@ app.post("/api/robot", async (req, res) => {
     const response = await client.fetch(url, {
       method,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: method !== "GET" ? JSON.stringify(body) : undefined,
+      body: method !== "GET" ? body : undefined,
     });
 
     const text = await response.text();
