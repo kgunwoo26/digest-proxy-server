@@ -1,13 +1,13 @@
-const express = require("express");
-const DigestFetch = require("digest-fetch");
-const cors = require("cors");
-require("dotenv").config();
+import express from "express";
+import DigestClient from "digest-fetch";
+import cors from "cors";
+import "dotenv";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const client = new DigestFetch(process.env.ROBOT_USER, process.env.ROBOT_PASS);
+const client = new DigestClient(process.env.ROBOT_USER, process.env.ROBOT_PASS);
 
 app.post("/api/robot", async (req, res) => {
   try {
