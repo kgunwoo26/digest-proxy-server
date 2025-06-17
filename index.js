@@ -11,6 +11,22 @@ app.use(express.json());
 
 const client = new DigestClient(process.env.ROBOT_USER, process.env.ROBOT_PASS);
 
+import os from "os";
+
+function getLocalIP() {
+  const interfaces = os.networkInterfaces();
+  for (const name of Object.keys(interfaces)) {
+    for (const net of interfaces[name] || []) {
+      if (net.family === "IPv4" && !net.internal) {
+        return net.address;
+      }
+    }
+  }
+  return "IP 찾을 수 없음";
+}
+
+console.log("📡 내 로컬 IP 주소:", getLocalIP());
+
 app.post("/api/robot", async (req, res) => {
   try {
     const { path, method = "GET", body } = req.body;
