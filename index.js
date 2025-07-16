@@ -11,6 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 어댑터의 IP 주소와 포트 번호 확인 (보통 기본 포트는 23 또는 10001)
+
 const client = new DigestClient(process.env.ROBOT_USER, process.env.ROBOT_PASS);
 
 // 내 IP 확인 함수
@@ -33,7 +35,6 @@ app.post("/api/robot", async (req, res) => {
   try {
     const { path, method = "GET", body } = req.body;
     const url = `${process.env.ROBOT_URL}${path}`;
-
     const response = await client.fetch(url, {
       method,
       headers: {
@@ -75,6 +76,42 @@ app.post("/api/barcode", async (req, res) => {
 
     sensor.once("close", () => {
       console.log("🔌 센서 연결 종료");
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Barcode 스캔 요청 실패" });
+  }
+});
+
+// 무게 측정 요청
+app.post("/api/barcode", async (req, res) => {
+  try {
+    const HOST = `${process.env.SCALE_IP}`; // 어댑터 IP 주소
+    const PORT = `${process.env.SCALE_PORT}`; // 어댑터 포트 번호
+    const sensor = new net.Socket();
+
+    sensor.connect(PORT, HOST, () => {
+      console.log(`✅ 저울에 연결됨: ${HOST}:${PORT}`);
+
+      // 예: 계량값 1회 요청 커맨드 (문서에서 S)
+      sensor.write("S\r\n");
+    });
+
+    // 응답 받기
+    sensor.on("data", (data) => {
+      const result = data.toString().trim();
+      console.log("📥 응답:", data.toString());
+      res.status(200).json({ weight: result });
+    });
+
+    // 연결 종료 시
+    sensor.on("close", () => {
+      console.log("🔌 연결 종료됨");
+    });
+
+    // 에러 처리
+    sensor.on("error", (err) => {
+      console.error("❌ 통신 에러:", err.message);
     });
   } catch (err) {
     console.error(err);
